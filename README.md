@@ -14,7 +14,7 @@ The RecordX gem is a convenient way of storing names and values accessible from 
     rec.to_h #=> {:fruit=>"banana"}
     rec.day = 'Sunday' #=> {:fruit=>"banana", :day=>"Sunday"}
 
-It can also ues a hash passed in when the object is initialised e.g.
+It can also use a hash passed in when the object is initialised e.g.
 
     rec = RecordX.new({car: 'electric', country: 'France'})
     puts "I would like to drive the #{rec.car} car in #{rec.country}"
