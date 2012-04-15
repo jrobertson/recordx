@@ -5,15 +5,21 @@
 class RecordX
 
   def initialize(callerx, id, h={})
+    @callerx, @id = callerx, id    
+    h.each {|name,val| attr_accessor2(name.to_s, val) }
+  end
 
-    @callerx, @id = callerx, id
-    
-    methods = h.to_a.map do |k,v| 
-      name, val = k.to_s, v
-      "def #{name}=(s) @#{name} = s.to_s; @callerx.update(@id, #{name}: s.to_s) end\n\
+  def method_missing(method_name, *raw_args)
+    arg = raw_args.length > 0 ? raw_args.first : nil
+    attr_accessor2(method_name[/\w+/], arg)
+    arg ? self.send(method_name, arg) : self.send(method_name)    
+  end
+
+  def attr_accessor2(name,val=nil)
+    self.instance_eval "def #{name}=(s)\n @#{name} = s.to_s\n\
+         @callerx.update(@id, #{name}: s.to_s)\n  end\n\
         def #{name}() @#{name} end\n\
         @#{name} = '#{val}'"
-    end
-    self.instance_eval methods.join("\n")
   end
+
 end  
