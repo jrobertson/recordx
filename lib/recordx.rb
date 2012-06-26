@@ -4,6 +4,8 @@
 
 class RecordX
 
+  attr_reader :id
+  
   class RXHash < Hash
     def initialize(callerx)
       super()
@@ -31,6 +33,17 @@ class RecordX
   end
 
   def attr_accessor2(name,val=nil)
+
+    reserved_keywords = ( 
+                          Object.public_methods | \
+                          Kernel.public_methods | \
+                          public_methods + [:method_missing]
+                        )
+    
+    name.prepend '_' if reserved_keywords.include? name.to_sym
+    puts 'inside recordx with name ' + name.inspect
+    puts 'val : ' + val.inspect
+    
     self.instance_eval %Q{
       def #{name}=(s)
         @#{name} = s.to_s

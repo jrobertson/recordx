@@ -4,8 +4,23 @@
 
 class RecordX
 
-  def initialize(callerx, id, h={})
+  class RXHash < Hash
+    def initialize(callerx)
+      super()
+      @callerx = callerx 
+    end
+
+    def []=(name, val)
+      unless @callerx.send(name.to_sym) == val then
+        @callerx.send((name.to_s + '=').to_sym, val) 
+      end
+      super(name, val)
+    end
+  end
+
+  def initialize(h={}, callerx=nil, id=nil )
     @callerx, @id = callerx, id    
+    @h = RXHash.new(self)
     h.each {|name,val| attr_accessor2(name.to_s, val) }
   end
 
@@ -16,10 +31,25 @@ class RecordX
   end
 
   def attr_accessor2(name,val=nil)
-    self.instance_eval "def #{name}=(s)\n @#{name} = s.to_s\n\
-         @callerx.update(@id, #{name}: s.to_s)\n  end\n\
-        def #{name}() @#{name} end\n\
-        @#{name} = '#{val}'"
+    self.instance_eval %Q{
+      def #{name}=(s)
+        @#{name} = s.to_s
+        unless @h[:#{name}] == s.to_s then
+          @h[:#{name}] =  s.to_s 
+          @callerx.update(@id, #{name}: s.to_s) if @callerx
+        end
+      end
+
+      def #{name}()
+        @#{name}
+      end
+
+      @#{name} = '#{val}'}
   end
 
+  def h()
+    @h
+  end
+
+  alias to_h h
 end  
