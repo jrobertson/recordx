@@ -41,8 +41,7 @@ class RecordX
                         )
     
     name.prepend '_' if reserved_keywords.include? name.to_sym
-    puts 'inside recordx with name ' + name.inspect
-    puts 'val : ' + val.inspect
+
     
     self.instance_eval %Q{
       def #{name}=(s)
