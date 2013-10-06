@@ -21,8 +21,9 @@ class RecordX
   end
 
   def initialize(h={}, callerx=nil, id=nil )
+
     @callerx, @id = callerx, id    
-    @h = RXHash.new(self)
+    @h = RXHash.new(self).merge h
     h.each {|name,val| attr_accessor2(name.to_s, val) }
   end
 
@@ -39,9 +40,8 @@ class RecordX
                           Kernel.public_methods | \
                           public_methods + [:method_missing]
                         )
-    
-    name.prepend '_' if reserved_keywords.include? name.to_sym
 
+    name.prepend '_' if reserved_keywords.include? name.to_sym
     
     self.instance_eval %Q{
       def #{name}=(s)
