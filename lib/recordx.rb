@@ -41,7 +41,9 @@ class RecordX
                           public_methods + [:method_missing]
                         )
 
-    name.prepend '_' if reserved_keywords.include? name.to_sym
+    if reserved_keywords.include? name.to_sym then
+      raise "recordx: reserved keyword *#{name}* can't be used as a field name"
+    end
     
     self.instance_eval %Q{
       def #{name}=(s)
