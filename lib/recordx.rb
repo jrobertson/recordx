@@ -27,6 +27,18 @@ class RecordX
     h.each {|name,val| attr_accessor2(name.to_s, val) }
   end
 
+  def h()
+    @h
+  end
+
+  alias to_h h
+
+  def update(h)
+    h.each {|name,value| self.method((name.to_s + '=').to_sym).call(value) }
+  end
+
+  private
+
   def method_missing(method_name, *raw_args)
     arg = raw_args.length > 0 ? raw_args.first : nil
     attr_accessor2(method_name[/\w+/], arg)
@@ -61,9 +73,4 @@ class RecordX
       @#{name} = '#{val}'}
   end
 
-  def h()
-    @h
-  end
-
-  alias to_h h
 end  
