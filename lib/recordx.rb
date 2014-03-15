@@ -27,6 +27,10 @@ class RecordX
     h.each {|name,val| attr_accessor2(name.to_s, val) }
   end
 
+  def delete()
+    @callerx.delete @id
+  end
+
   def h()
     @h
   end
@@ -70,7 +74,7 @@ class RecordX
         @#{name}
       end
 
-      @#{name} = '#{val}'}
+      @#{name} = %{#{val}}}
   end
 
 end  
