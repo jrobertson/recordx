@@ -21,10 +21,27 @@ class RecordX
   end
 
   def initialize(h={}, callerx=nil, id=nil )
+
     @callerx, @id = callerx, id    
-    @h = RXHash.new(self)
+    @h = RXHash.new(self).merge h
     h.each {|name,val| attr_accessor2(name.to_s, val) }
   end
+
+  def delete()
+    @callerx.delete @id
+  end
+
+  def h()
+    @h
+  end
+
+  alias to_h h
+
+  def update(h)
+    h.each {|name,value| self.method((name.to_s + '=').to_sym).call(value) }
+  end
+
+  private
 
   def method_missing(method_name, *raw_args)
     arg = raw_args.length > 0 ? raw_args.first : nil
@@ -39,10 +56,10 @@ class RecordX
                           Kernel.public_methods | \
                           public_methods + [:method_missing]
                         )
-    
-    name.prepend '_' if reserved_keywords.include? name.to_sym
-    puts 'inside recordx with name ' + name.inspect
-    puts 'val : ' + val.inspect
+
+    if reserved_keywords.include? name.to_sym then
+      raise "recordx: reserved keyword *#{name}* can't be used as a field name"
+    end
     
     self.instance_eval %Q{
       def #{name}=(s)
@@ -57,12 +74,7 @@ class RecordX
         @#{name}
       end
 
-      @#{name} = '#{val}'}
+      @#{name} = %{#{val}}}
   end
 
-  def h()
-    @h
-  end
-
-  alias to_h h
 end  

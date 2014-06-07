@@ -35,6 +35,10 @@ class RecordX
     @h
   end
 
+  def inspect()
+    "<object #%s>" % [self.object_id]
+  end
+
   alias to_h h
 
   def update(h)
