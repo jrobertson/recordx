@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = 'recordx'
-  s.version = '0.1.14'
-  s.summary = 'recordx'
+  s.version = '0.1.15'
+  s.summary = 'A kind of Hash which can also use accessor methods to store or retrieve values.'
   s.authors = ['James Robertson']
   s.files = Dir['lib/**/*.rb'] 
   s.signing_key = '../privatekeys/recordx.pem'

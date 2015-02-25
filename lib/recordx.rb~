@@ -48,6 +48,11 @@ class RecordX
   private
 
   def method_missing(method_name, *raw_args)
+    
+    if method_name == :[] or method_name == :[]= then
+      return @h.send(method_name, *raw_args) 
+    end
+    
     arg = raw_args.length > 0 ? raw_args.first : nil
     attr_accessor2(method_name[/\w+/], arg)
     arg ? self.send(method_name, arg) : self.send(method_name)    
