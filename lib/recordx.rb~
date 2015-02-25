@@ -26,6 +26,13 @@ class RecordX
     @h = RXHash.new(self).merge h
     h.each {|name,val| attr_accessor2(name.to_s, val) }
   end
+  
+  def [](k)      @h[k]         end
+  def []=(k,v)   @h[k] = v     end
+  def keys()     @h.keys       end
+  def values()   @h.keys       end
+  def each(&blk) @h.each(&blk) end
+  alias each_pair each
 
   def delete()
     @callerx.delete @id
@@ -48,11 +55,7 @@ class RecordX
   private
 
   def method_missing(method_name, *raw_args)
-    
-    if method_name == :[] or method_name == :[]= then
-      return @h.send(method_name, *raw_args) 
-    end
-    
+        
     arg = raw_args.length > 0 ? raw_args.first : nil
     attr_accessor2(method_name[/\w+/], arg)
     arg ? self.send(method_name, arg) : self.send(method_name)    

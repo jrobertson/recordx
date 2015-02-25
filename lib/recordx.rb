@@ -2,11 +2,13 @@
 
 # file: recordx.rb
 
+
 class RecordX
 
   attr_reader :id
   
   class RXHash < Hash
+    
     def initialize(callerx)
       super()
       @callerx = callerx 
@@ -20,8 +22,16 @@ class RecordX
     end
   end
 
-  def initialize(h={}, callerx=nil, id=nil )
+  def initialize(x=nil, callerx=nil, id=nil )
 
+    h = if x.is_a? Hash then
+      x
+    elsif x.is_a? Array and x.first.is_a? Rexle::Element then
+      x.inject({}) {|r,y| r.merge(y.name.to_sym => y.text.unescape)}
+    else
+      x
+    end
+    
     @callerx, @id = callerx, id    
     @h = RXHash.new(self).merge h
     h.each {|name,val| attr_accessor2(name.to_s, val) }
@@ -43,7 +53,7 @@ class RecordX
   end
 
   def inspect()
-    "<object #%s>" % [self.object_id]
+    "#<RecordX:%s>" % [self.object_id]
   end
 
   alias to_h h
