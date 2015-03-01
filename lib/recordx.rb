@@ -31,7 +31,7 @@ class RecordX
     elsif x.is_a? Array then
       
       x.inject({}) do |r,y|
-        val = y.is_a?(String) ? y.text.unescape : ''
+        val = y.text.is_a?(String) ? y.text.unescape : ''
         r.merge(y.name.to_sym => val)
       end
       

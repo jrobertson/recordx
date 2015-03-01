@@ -24,12 +24,21 @@ class RecordX
 
   def initialize(x=nil, callerx=nil, id=nil )
 
-    h = if x.is_a? Hash then
+    h = if x.is_a? Hash then x
+    
       x
-    elsif x.is_a? Array and x.first.is_a? Rexle::Element then
-      x.inject({}) {|r,y| r.merge(y.name.to_sym => y.text.unescape)}
+      
+    elsif x.is_a? Array then
+      
+      x.inject({}) do |r,y|
+        val = y.text.is_a?(String) ? y.text.unescape : ''
+        r.merge(y.name.to_sym => val)
+      end
+      
     else
+      
       x
+      
     end
     
     @callerx, @id = callerx, id    
@@ -53,7 +62,7 @@ class RecordX
   end
 
   def inspect()
-    "#<RecordX:%s>" % [self.object_id]
+    "#<RecordX:%s @h=%s>" % [self.object_id, @h]
   end
 
   alias to_h h
