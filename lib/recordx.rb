@@ -87,7 +87,7 @@ class RecordX
                           Kernel.public_methods | \
                           public_methods + [:method_missing]
                         )
-    exceptions = [:name]
+    exceptions = [:name, :id]
 
     if (reserved_keywords - exceptions).include? name.to_sym then
       raise "recordx: reserved keyword *#{name}* can't be used as a field name"
