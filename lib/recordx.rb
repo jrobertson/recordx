@@ -5,7 +5,7 @@
 
 class RecordX
 
-  attr_reader :id
+  attr_reader :id, :created, :last_modified
   
   class RXHash < Hash
     
@@ -22,7 +22,7 @@ class RecordX
     end
   end
 
-  def initialize(x=nil, callerx=nil, id=nil )
+  def initialize(x=nil, callerx=nil, id=nil, created=nil, last_modified=nil)
 
     h = if x.is_a? Hash then x
     
@@ -41,7 +41,8 @@ class RecordX
       
     end
     
-    @callerx, @id = callerx, id    
+    @callerx, @id, @created, @last_modified = callerx, id, \
+                                                         created, last_modified
     @h = RXHash.new(self).merge h
     h.each {|name,val| attr_accessor2(name.to_s, val) }
   end
