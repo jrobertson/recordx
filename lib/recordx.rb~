@@ -93,8 +93,9 @@ class RecordX
     if (reserved_keywords - exceptions).include? name.to_sym then
       raise "recordx: reserved keyword *#{name}* can't be used as a field name"
     end
-        
+    
     self.instance_eval %Q{
+      
       def #{name}=(s)
         @#{name} = s.to_s
         unless @h[:#{name}] == s.to_s then
@@ -107,11 +108,10 @@ class RecordX
         @#{name}
       end
 
-      @#{name} = <<EOF
-#{val}
-EOF
-  }
-
+    }
+      
+    self.method((name + '=').to_sym).call val
+    
   end
 
-end  
+end 
