@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'recordx'
-  s.version = '0.2.2'
+  s.version = '0.2.3'
   s.summary = 'A kind of Hash which can also use accessor methods to store or retrieve values.'
   s.authors = ['James Robertson']
   s.files = Dir['lib/**/*.rb'] 

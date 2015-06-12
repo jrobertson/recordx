@@ -109,8 +109,8 @@ class RecordX
       end
 
     }
-      
-    self.method((name + '=').to_sym).call val
+    
+    self.method((name + '=').to_sym).call val if val
     
   end
 
