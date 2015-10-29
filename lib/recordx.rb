@@ -45,6 +45,7 @@ class RecordX
                                                          created, last_modified
     @h = RXHash.new(self).merge h
     h.each {|name,val| attr_accessor2(name.to_s, val) }
+    
   end
   
   def [](k)      @h[k]         end
@@ -67,6 +68,28 @@ class RecordX
   end
 
   alias to_h h
+    
+  def to_html(xslt: '')
+
+    # This method is expected to be used within Dynarex
+    
+    kvx = self.to_kvx
+
+    xsl_buffer = RXFHelper.read(xslt).first
+    xslt  = Nokogiri::XSLT(xsl_buffer)
+    xslt.transform(Nokogiri::XML(kvx.to_xml)).to_s 
+
+  end
+  
+  def to_kvx()
+    
+    kvx = Kvx.new(@h.to_h)
+    summary_fields = @callerx.summary.keys - [:recordx_type, \
+                                         :format_mask, :schema, :default_key]
+    summary_fields.each {|field| kvx.summary[field] = @callerx.summary[field] }
+    kvx
+    
+  end
 
   def update(h)
     h.each {|name,value| self.method((name.to_s + '=').to_sym).call(value) }
@@ -114,4 +137,4 @@ class RecordX
     
   end
 
-end
+end  
