@@ -3,6 +3,10 @@
 # file: recordx.rb
 
 
+require 'rexle'
+require 'rexle-builder'
+
+
 class RecordX
 
   attr_reader :id, :created, :last_modified
@@ -89,6 +93,17 @@ class RecordX
     summary_fields.each {|field| kvx.summary[field] = @callerx.summary[field] }
     kvx
     
+  end
+  
+  def to_xml()
+
+    def build(xml, h)
+      h.each_pair {|key, value| xml.send(key.to_sym, value) }
+    end
+
+    xml = RexleBuilder.new
+
+    Rexle.new(xml.root { build xml, h }).xml pretty: true    
   end
 
   def update(h)

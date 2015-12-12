@@ -1,9 +1,11 @@
 Gem::Specification.new do |s|
   s.name = 'recordx'
-  s.version = '0.2.4'
+  s.version = '0.3.0'
   s.summary = 'A kind of Hash which can also use accessor methods to store or retrieve values.'
   s.authors = ['James Robertson']
-  s.files = Dir['lib/**/*.rb'] 
+  s.files = Dir['lib/recordx.rb']
+  s.add_runtime_dependency('rexle', '~> 1.3', '>=1.3.9')
+  s.add_runtime_dependency('rexle-builder', '~> 0.2', '>=0.2.1')
   s.signing_key = '../privatekeys/recordx.pem'
   s.cert_chain  = ['gem-public_cert.pem']
   s.license = 'MIT'
