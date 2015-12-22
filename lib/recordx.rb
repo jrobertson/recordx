@@ -55,7 +55,7 @@ class RecordX
   def [](k)      @h[k]         end
   def []=(k,v)   @h[k] = v     end
   def keys()     @h.keys       end
-  def values()   @h.keys       end
+  def values()   @h.values     end
   def each(&blk) @h.each(&blk) end
   alias each_pair each
 
