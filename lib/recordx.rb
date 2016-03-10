@@ -80,8 +80,9 @@ class RecordX
     kvx = self.to_kvx
 
     xsl_buffer = RXFHelper.read(xslt).first
-    xslt  = Nokogiri::XSLT(xsl_buffer)
-    xslt.transform(Nokogiri::XML(kvx.to_xml)).to_s 
+    #jr100316 xslt  = Nokogiri::XSLT(xsl_buffer)
+    #jr100316 xslt.transform(Nokogiri::XML(kvx.to_xml)).to_s 
+    Rexslt.new(xsl_buffer, kvx.to_xml).to_s
 
   end
   
