@@ -116,6 +116,7 @@ class RecordX
   def method_missing(method_name, *raw_args)
         
     arg = raw_args.length > 0 ? raw_args.first : nil
+
     attr_accessor2(method_name[/\w+/], arg)
     arg ? self.send(method_name, arg) : self.send(method_name)    
   end
@@ -129,7 +130,7 @@ class RecordX
                         )
     exceptions = [:name, :id]
 
-    if (reserved_keywords - exceptions).include? name.to_sym then
+    if (reserved_keywords - exceptions - @h.keys).include? name.to_sym then
       raise "recordx: reserved keyword *#{name}* can't be used as a field name"
     end
     
@@ -138,16 +139,22 @@ class RecordX
       def #{name}=(s)
         @#{name} = s.to_s
         unless @h[:#{name}] == s.to_s then
-          @h[:#{name}] =  s.to_s 
+          @h[:#{name}] =  s.to_s
           @callerx.update(@id, #{name}: s.to_s) if @callerx
         end
       end
 
-      def #{name}()
-        @#{name}
-      end
-
     }
+    
+    # If this method has been monkey patched don't attempt to overwrite it
+    
+    if not self.public_methods.include? name.to_sym then
+      self.instance_eval %Q{    
+        def #{name}()
+          @#{name}
+        end
+      }
+    end
     
     self.method((name + '=').to_sym).call val if val
     
