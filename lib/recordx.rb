@@ -24,6 +24,10 @@ class RecordX
       end
       super(name, val)
     end
+    
+    def clone()
+      self.to_h.clone
+    end
   end
 
   def initialize(x=nil, callerx=nil, id=nil, created=nil, last_modified=nil)
@@ -71,7 +75,9 @@ class RecordX
     "#<RecordX:%s @h=%s>" % [self.object_id, @h]
   end
 
-  alias to_h h
+  def to_h()
+    @h.clone
+  end
     
   def to_html(xslt: '')
 
