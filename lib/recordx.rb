@@ -102,6 +102,10 @@ class RecordX
     
   end
   
+  def to_s()
+    self.to_kvx.to_s
+  end
+  
   def to_xml()
 
     def build(xml, h)
