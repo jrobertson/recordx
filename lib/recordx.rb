@@ -30,7 +30,11 @@ class RecordX
     end
   end
 
-  def initialize(x=nil, callerx=nil, id=nil, created=nil, last_modified=nil)
+  def initialize(x=nil, callerx=nil, id=nil, created=nil, last_modified=nil, 
+                 debug: false)
+    
+    @debug = debug
+    puts 'x: ' + x.inspect if @debug
 
     h = if x.is_a? Hash then x
     
@@ -94,10 +98,15 @@ class RecordX
   
   def to_kvx()
     
+    puts 'inside to_kvx' if @debug
     kvx = Kvx.new(@h.to_h)
-    summary_fields = @callerx.summary.keys - [:recordx_type, \
-                                         :format_mask, :schema, :default_key]
-    summary_fields.each {|field| kvx.summary[field] = @callerx.summary[field] }
+    
+    if @callerx then
+      summary_fields = @callerx.summary.keys - [:recordx_type, \
+                                          :format_mask, :schema, :default_key]
+      summary_fields.each {|field| kvx.summary[field] = @callerx.summary[field] }
+    end
+    
     kvx
     
   end
