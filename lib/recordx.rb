@@ -101,7 +101,7 @@ class RecordX
     puts 'inside to_kvx' if @debug
     kvx = Kvx.new(@h.to_h)
     
-    if @callerx then
+    if @callerx and @callerx.summary[:recordx_type] then
       summary_fields = @callerx.summary.keys - [:recordx_type, \
                                           :format_mask, :schema, :default_key]
       summary_fields.each {|field| kvx.summary[field] = @callerx.summary[field] }
@@ -156,6 +156,9 @@ class RecordX
     self.instance_eval %Q{
       
       def #{name}=(s)
+        
+        puts 'inside #{name} assignment' if @debug
+        
         @#{name} = s.to_s
         unless @h[:#{name}] == s.to_s then
           @h[:#{name}] =  s.to_s
