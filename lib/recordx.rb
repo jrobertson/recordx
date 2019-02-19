@@ -8,6 +8,7 @@ require 'rexle-builder'
 
 
 class RecordX
+  using ColouredText
 
   attr_reader :id, :created, :last_modified
   
@@ -34,7 +35,7 @@ class RecordX
                  debug: false)
     
     @debug = debug
-    puts 'x: ' + x.inspect if @debug
+    puts ('x: ' + x.inspect).debug if @debug
 
     h = if x.is_a? Hash then x
     
@@ -98,8 +99,8 @@ class RecordX
   
   def to_kvx()
     
-    puts 'inside to_kvx' if @debug
-    kvx = Kvx.new(@h.to_h)
+    puts 'inside to_kvx'.info if @debug
+    kvx = Kvx.new(@h.to_h, debug: @debug)
     
     if @callerx and @callerx.summary[:recordx_type] then
       summary_fields = @callerx.summary.keys - [:recordx_type, \
