@@ -54,10 +54,10 @@ class RecordX
       
     end
     
-    @callerx, @id, @created, @last_modified = callerx, id, \
-                                                         created, last_modified
+    @id, @created, @last_modified = id, created, last_modified
     @h = RXHash.new(self).merge h
     h.each {|name,val| attr_accessor2(name.to_s, val) }
+    @callerx = callerx
     
   end
   
