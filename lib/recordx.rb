@@ -4,6 +4,8 @@
 
 
 require 'rexle'
+require 'kvx'
+require 'rxfreader'
 require 'rexle-builder'
 
 
@@ -11,56 +13,60 @@ class RecordX
   using ColouredText
 
   attr_reader :id, :created, :last_modified
-  
+
   class RXHash < Hash
-    
+
     def initialize(callerx)
       super()
-      @callerx = callerx 
+      @callerx = callerx
     end
 
     def []=(name, val)
       unless @callerx.send(name.to_sym) == val then
-        @callerx.send((name.to_s + '=').to_sym, val) 
+        @callerx.send((name.to_s + '=').to_sym, val)
       end
       super(name, val)
     end
-    
+
     def clone()
       self.to_h.clone
     end
   end
 
-  def initialize(x=nil, callerx=nil, id=nil, created=nil, last_modified=nil, 
+  def initialize(x=nil, callerx=nil, id=nil, created=nil, last_modified=nil,
                  debug: false)
-    
+
     @debug = debug
     puts ('x: ' + x.inspect).debug if @debug
 
     h = if x.is_a? Hash then x
-    
+
       x
-      
+
     elsif x.is_a? Array then
-      
+
       x.inject({}) do |r,y|
         val = y.text.is_a?(String) ? y.text.unescape : ''
         r.merge(y.name.to_sym => val)
       end
-      
+
+    elsif x.respond_to? :to_h
+
+      x.to_h
+
     else
-      
+
       x
-      
+
     end
-    
+
     @id, @created, @last_modified = id, created, last_modified
     @h = RXHash.new(self).merge h
     h.each {|name,val| attr_accessor2(name.to_s, val) }
     @callerx = callerx
-    
+
   end
-  
+
   def [](k)      @h[k]         end
   def []=(k,v)   @h[k] = v     end
   def keys()     @h.keys       end
@@ -83,39 +89,39 @@ class RecordX
   def to_h()
     @h.clone
   end
-    
+
   def to_html(xslt: '')
 
     # This method is expected to be used within Dynarex
-    
+
     kvx = self.to_kvx
 
-    xsl_buffer = RXFHelper.read(xslt).first
+    xsl_buffer = RXFReader.read(xslt).first
     #jr100316 xslt  = Nokogiri::XSLT(xsl_buffer)
-    #jr100316 xslt.transform(Nokogiri::XML(kvx.to_xml)).to_s 
+    #jr100316 xslt.transform(Nokogiri::XML(kvx.to_xml)).to_s
     Rexslt.new(xsl_buffer, kvx.to_xml).to_s
 
   end
-  
+
   def to_kvx()
-    
+
     puts 'inside to_kvx'.info if @debug
     kvx = Kvx.new(@h.to_h, debug: @debug)
-    
+
     if @callerx and @callerx.summary[:recordx_type] then
       summary_fields = @callerx.summary.keys - [:recordx_type, \
                                           :format_mask, :schema, :default_key]
       summary_fields.each {|field| kvx.summary[field] = @callerx.summary[field] }
     end
-    
+
     kvx
-    
+
   end
-  
+
   def to_s()
     self.to_kvx.to_s
   end
-  
+
   def to_xml()
 
     def build(xml, h)
@@ -124,7 +130,7 @@ class RecordX
 
     xml = RexleBuilder.new
 
-    Rexle.new(xml.root { build xml, h }).xml pretty: true    
+    Rexle.new(xml.root { build xml, h }).xml pretty: true
   end
 
   def update(h)
@@ -134,16 +140,16 @@ class RecordX
   private
 
   def method_missing(method_name, *raw_args)
-        
+
     arg = raw_args.length > 0 ? raw_args.first : nil
 
     attr_accessor2(method_name[/\w+/], arg)
-    arg ? self.send(method_name, arg) : self.send(method_name)    
+    arg ? self.send(method_name, arg) : self.send(method_name)
   end
 
   def attr_accessor2(name,val=nil)
 
-    reserved_keywords = ( 
+    reserved_keywords = (
                           Object.public_methods | \
                           Kernel.public_methods | \
                           public_methods + [:method_missing]
@@ -153,13 +159,13 @@ class RecordX
     if (reserved_keywords - exceptions - @h.keys).include? name.to_sym then
       raise "recordx: reserved keyword *#{name}* can't be used as a field name"
     end
-    
+
     self.instance_eval %Q{
-      
+
       def #{name}=(s)
-        
+
         puts 'inside #{name} assignment' if @debug
-        
+
         @#{name} = s.to_s
         unless @h[:#{name}] == s.to_s then
           @h[:#{name}] =  s.to_s
@@ -168,19 +174,19 @@ class RecordX
       end
 
     }
-    
+
     # If this method has been monkey patched don't attempt to overwrite it
-    
+
     if not self.public_methods.include? name.to_sym then
-      self.instance_eval %Q{    
+      self.instance_eval %Q{
         def #{name}()
           @#{name}
         end
       }
     end
-    
+
     self.method((name + '=').to_sym).call val if val
-    
+
   end
 
-end  
+end
